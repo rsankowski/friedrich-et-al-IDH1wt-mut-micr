@@ -941,35 +941,36 @@ sc_heatmap <- function(.sc = sc,
         }
 
 #plot_expmap
-        plot_expmap <- function(gene, .sc=sc, point_size=2.5, logsc=FALSE, line_width=0.25, .retain_cl = retain_cl) {
-          l <- colSums(as.data.frame(as.matrix(.sc@ndata))[rownames(.sc@ndata) %in% gene,] * min(.sc@counts)) + 0.1
-          l <- l[names(.sc@cpart)[sc@cpart %in% .retain_cl]]
+        plot_expmap <- function(gene, .sc=panela, point_size=.5, logsc=FALSE) {
+          l <- rowSums(as.data.frame(.sc[,2:36][,colnames(.sc) %in% gene])) + 0.1
           mi <- min(l)
           ma <- max(l)
           ColorRamp <- colorRampPalette(c("darkblue","lightblue2","yellow","red2"))(100)
           ColorLevels <- seq(mi, ma, length = length(ColorRamp))
           v <- round((l - mi)/(ma - mi) * 99 + 1, 0)
           
-          kk <- bind_cols(data.frame('l'=l), .sc@tsne[which(.sc@cpart %in% .retain_cl),]) %>% arrange(l)
+          kk <- bind_cols(data.frame('l'=l), .sc[, c("tSNE1","tSNE2")]) %>% arrange(l) 
+          
           
           if(logsc) {
-            plot <- ggplot(kk, aes(V1, V2, fill = log(l))) +
-              geom_point(size = point_size, pch = 21, stroke=line_width) +
-              scale_fill_gradientn('', colors = ColorRamp) +
+            plot <- ggplot(kk, aes(tSNE1, tSNE2, color = log(l))) +
+              geom_point(size = point_size, pch = 19) +
+              scale_color_gradientn('', colors = ColorRamp) +
               theme_void() +
               labs(title = paste(gene, collapse = ',')) 
             return(plot)
           }
           else {
-            plot <- ggplot(kk, aes(V1, V2, fill = l)) +
-              geom_point(size = point_size, pch = 21, stroke=line_width) +
-              scale_fill_gradientn('', colors = ColorRamp) +
+            plot <- ggplot(kk, aes(tSNE1, tSNE2, color = l)) +
+              geom_point(size = point_size, pch = 19) +
+              scale_color_gradientn('', colors = ColorRamp) +
               theme_void() +
               labs(title = paste(gene, collapse = ','))
             return(plot)
           }
           
         }
+        
        
 # hyper_test
         hyper_test_new <- function(data1 = sc, data2 = df, var1 = "Cluster", var2 = "Region") {

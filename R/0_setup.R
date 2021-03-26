@@ -32,7 +32,10 @@ list.of.packages <- c(
   "viridis",
   "readxl",
   "RColorBrewer",
-  "pheatmap"
+  "pheatmap",
+  "MASS",
+  "rebus",
+  "emmeans"
 )
 
 
